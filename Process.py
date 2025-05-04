@@ -1,13 +1,14 @@
-
 import os
 import tarfile
 import zipfile
-
+import time
+from ProcessTarFile import ProcessTarGZFile
 
 class FileProcessor:
     def __init__(self):
         self.file_path = None
         self.supported_extensions = [".txt", ".zip", ".tar.gz"]
+        self.tar_file = ProcessTarGZFile()
 
     def set_file_path(self, file_path):
         """Set the file path for processing."""
@@ -51,9 +52,14 @@ class FileProcessor:
                             content = file.read()
                             return f"Text file processed.: {len(content)} "
                     case '.tar.gz':
-                        print("condition met")
                         with tarfile.open(self.file_path, 'r:gz') as tar:
-                            file_list = tar.getnames()
+                            file_list = tar.getmembers()
+                            start_time = time.perf_counter()
+                            output = self.tar_file.set_file(file_list, tar)
+                            print(output)
+                            end_time = time.perf_counter()
+                            exec_time = end_time - start_time;
+                            print(f"Execute time for tar_file: {exec_time:.6f} seconds")
                             return f"TAR.GZ file count files: {len(file_list)}"
                     case '.zip':
                         with zipfile.ZipFile(self.file_path, 'r') as zip_file:
