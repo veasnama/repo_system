@@ -1,16 +1,18 @@
 from PyQt6.QtWidgets import (QLabel,QWidget, QSizePolicy, QFileDialog, QVBoxLayout,QPushButton)
 from PyQt6.QtCore import Qt, QSize,QStandardPaths
-
+from Process import FileProcessor
 class HomePage(QWidget):
     def __init__(self):
         super().__init__()
         button = QPushButton("Upload")
+        self.file_processor = FileProcessor()
         button.setToolTip("Please upload files")
         button.clicked.connect(self.open_file_dialog)
         button.setSizePolicy(QSizePolicy.Policy.Fixed, QSizePolicy.Policy.Fixed)
         button.setStyleSheet("""
         QPushButton {
                 color: white; /* White text */
+                text-transform: uppercase;
                 font-family: Arial, sans-serif; /* Font */
                 font-size: 14px; /* Font size */
                 font-weight: bold; /* Bold text */
@@ -31,7 +33,8 @@ class HomePage(QWidget):
                                          """)
         
         layout1 = QVBoxLayout()
-        label = QLabel("Welcome to Tab 1!\nThis is a simple label.")
+        label = QLabel("Please upload logs for  automatic analysis")
+        label.setStyleSheet("font-size:16px; text-transform:uppercase; font-weight: bold")
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)        
         layout1.addWidget(label)
         layout1.setSizeConstraint(QVBoxLayout.SizeConstraint.SetMinimumSize)

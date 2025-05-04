@@ -10,15 +10,15 @@ from HomePage import HomePage
 class FileDialogDemo(QMainWindow):
     def __init__(self):
         super().__init__()
-        self.file_processor = FileProcessor()
         self.home_page = HomePage()
         self.resize(800,400)
+        self.file_processor = FileProcessor()
         # Create the tab widget
         tabs = QTabWidget()
+        tabs.setIconSize(QtCore.QSize(32,32))
         tabs.setStyleSheet("""
          /* Style the QTabWidget (content area) */
     QTabWidget::pane {
-        border: 1px solid #4CAF50; /* Green border */
         border-radius: 5px; /* Rounded corners */
     }
 
@@ -27,15 +27,14 @@ class FileDialogDemo(QMainWindow):
         background-color: #4CAF50; /* Green background like the button */
         color: white; /* White text */
         font-family: Arial, sans-serif;
-        font-size: 14px;
-        font-weight: bold;
+        font-size: 24px;
+        text-transform: uppercase;
         border: none; /* No border */
         padding: 8px 16px; /* Padding for tab size */
         margin-right: 4px; /* Space between tabs */
-        min-width: 100px; /* Match button width */
-        height: 40px; /* Match button height */
+        min-width: 124px; /* Match button width */
+        height: 64px; /* Match button height */
     }
-
     /* Hover effect for tabs */
     QTabBar::tab:hover {
         background-color: #2196F3; /* Blue background on hover */
@@ -63,40 +62,23 @@ class FileDialogDemo(QMainWindow):
         # layout.addWidget(button)  # Add button
         # layout.addStretch(1)  # Add stretch after button       
       # Tab 1: Simple Label
-        tabs.addTab(self.home_page, "Home") 
+        tabs.addTab(self.home_page, QtGui.QIcon("images/home-button.png"), "Home") 
         # Create central widget and layout
         
         
         # Tab 2: Input and Button
         tab2 = QWidget()
         layout2 = QVBoxLayout()
-        input_field = QLineEdit()
-        input_field.setPlaceholderText("Enter some text...")
-        input_field.setStyleSheet("padding: 5px;")        
-        button = QPushButton("Submit")
-        button.clicked.connect(lambda: self.on_button_click(input_field.text()))
-        layout2.addWidget(input_field)
-        layout2.addWidget(button)
-        layout2.addStretch()
+        # Kindly add custom widget in between
         tab2.setLayout(layout2)
         tabs.addTab(tab2, "Input")        # Create layout        
         # Tab 3: Table
         tab3 = QWidget()
         layout3 = QVBoxLayout()
-        table = QTableWidget()
-        table.setRowCount(3)
-        table.setColumnCount(2)
-        table.setHorizontalHeaderLabels(["Name", "Age"])
-        table.setItem(0, 0, QTableWidgetItem("Alice"))
-        table.setItem(0, 1, QTableWidgetItem("25"))
-        table.setItem(1, 0, QTableWidgetItem("Bob"))
-        table.setItem(1, 1, QTableWidgetItem("30"))
-        table.setItem(2, 0, QTableWidgetItem("Charlie"))
-        table.setItem(2, 1, QTableWidgetItem("35"))
-        
-        layout3.addWidget(table)
+        # kindly add widget in between        
         tab3.setLayout(layout3)
         tabs.addTab(tab3, QtGui.QIcon("images/dragdrop.png"), "Table")        # layout = QVBoxLayout()
+        
         # Create button
 
     def on_button_click(sefl, text):
