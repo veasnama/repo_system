@@ -9,6 +9,7 @@ class ProcessTarGZFile():
             "ldm_list.out",
             "ilomconfig_list_system-summary.out",
             "qlc_qaucli_-dm_all_general.out",
+            "fmadm-faulty.out",
             "uname-a.out"
         ]
         print("constructor run")
