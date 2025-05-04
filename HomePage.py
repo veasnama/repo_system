@@ -1,10 +1,12 @@
-from PyQt6.QtWidgets import (QLabel,QWidget, QSizePolicy, QFileDialog, QVBoxLayout,QPushButton)
+from PyQt6.QtWidgets import (QListWidgetItem, QListWidget,QLabel,QWidget, QSizePolicy, QFileDialog, QVBoxLayout,QPushButton)
 from PyQt6.QtCore import Qt, QSize,QStandardPaths
+from PyQt6.QtGui import QFont, QIcon
 from Process import FileProcessor
 class HomePage(QWidget):
     def __init__(self):
         super().__init__()
-        button = QPushButton("Upload")
+        button = QPushButton( QIcon("images/file.png"), "Upload")
+        button.setIconSize(QSize(32, 32))
         self.file_processor = FileProcessor()
         button.setToolTip("Please upload files")
         button.clicked.connect(self.open_file_dialog)
@@ -14,11 +16,11 @@ class HomePage(QWidget):
                 color: white; /* White text */
                 text-transform: uppercase;
                 font-family: Arial, sans-serif; /* Font */
-                font-size: 14px; /* Font size */
+                font-size: 18px; /* Font size */
                 font-weight: bold; /* Bold text */
                 border: none; /* No border */
                 border-radius: 5px; /* Rounded corners */
-                width: 100px; /* Fixed width */
+                width: 120px; /* Fixed width */
                 height: 40px; /* Fixed height */
                 padding: 5px; /* Inner padding */
             }            
@@ -33,13 +35,57 @@ class HomePage(QWidget):
                                          """)
         
         layout1 = QVBoxLayout()
-        label = QLabel("Please upload logs for  automatic analysis")
+        label = QLabel("Please upload logs for Health Check Analysis")
         label.setStyleSheet("font-size:16px; text-transform:uppercase; font-weight: bold")
         label.setAlignment(Qt.AlignmentFlag.AlignCenter)        
+        
+        self.list_widget = QListWidget()        
+        self.list_widget.setStyleSheet("""
+            QListWidget::indicator {
+                border: 2px solid white;  /* Red border for checkboxes */
+                width: 16px;
+                height: 16px;
+            }
+            QListWidget::indicator:checked {
+                background-color: #2196F3;  /* Optional: Background when checked */
+            }
+            QListWidget::indicator:unchecked {
+                background-color: white;  /* Optional: Background when unchecked */
+            }
+        """)
+        #Add items to the list
+        items = ["SPARC Server", "X86-64 Server", "ZFS STORAGE", "Exadata", "ODA"]
+        # Define a custom font size
+        font = QFont()
+        font.setPointSize(18)
+        for item_text in items:
+            item = QListWidgetItem(item_text)
+            item.setFlags(item.flags() | Qt.ItemFlag.ItemIsUserCheckable)
+            item.setFont(font)
+            item.setCheckState(Qt.CheckState.Unchecked)
+            self.list_widget.addItem(item)        
+        
+        # Connect selection change signal
+        self.list_widget.itemSelectionChanged.connect(self.on_selection_changed)
+        
+        self.list_widget.itemChanged.connect(self.on_item_checked)        
+        
         layout1.addWidget(label)
+        layout1.addWidget(self.list_widget)
         layout1.setSizeConstraint(QVBoxLayout.SizeConstraint.SetMinimumSize)
         layout1.addWidget(button,alignment=Qt.AlignmentFlag.AlignCenter)
         self.setLayout(layout1)
+    
+    def on_selection_changed(self):
+        # Get selected items
+        selected_items = [item.text() for item in self.list_widget.selectedItems()]
+        print("Selected items:", selected_items)    
+    
+    def on_item_checked(self, item):
+        # Handle checkbox state change
+        state = "Checked" if item.checkState() == Qt.CheckState.Checked else "Unchecked"
+        index = self.list_widget.row(item)
+        print(f"Item at index {index} {item.text()} is {state}")    
     def open_file_dialog(self):
         # Create open file dialog
         default_path = QStandardPaths.writableLocation(QStandardPaths.StandardLocation.DocumentsLocation)

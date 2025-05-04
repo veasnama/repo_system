@@ -24,7 +24,7 @@ class FileDialogDemo(QMainWindow):
 
     /* Style the tab bar */
     QTabBar::tab {
-        background-color: #4CAF50; /* Green background like the button */
+        background-color: #18354d; /* Green background like the button */
         color: white; /* White text */
         font-family: Arial, sans-serif;
         font-size: 24px;
@@ -71,14 +71,18 @@ class FileDialogDemo(QMainWindow):
         layout2 = QVBoxLayout()
         # Kindly add custom widget in between
         tab2.setLayout(layout2)
-        tabs.addTab(tab2, "Input")        # Create layout        
+        tabs.addTab(tab2, QtGui.QIcon("images/document.png"), "Reports")        # Create layout        
         # Tab 3: Table
         tab3 = QWidget()
         layout3 = QVBoxLayout()
         # kindly add widget in between        
         tab3.setLayout(layout3)
-        tabs.addTab(tab3, QtGui.QIcon("images/dragdrop.png"), "Table")        # layout = QVBoxLayout()
-        
+        tabs.addTab(tab3, QtGui.QIcon("images/ticket.png"), "Tickets")        # layout = QVBoxLayout()
+
+        tab4 = QWidget()
+        layout4 =QVBoxLayout()
+        tab4.setLayout(layout4)
+        tabs.addTab(tab4, QtGui.QIcon("images/settings.png"), "Settings")
         # Create button
 
     def on_button_click(sefl, text):
