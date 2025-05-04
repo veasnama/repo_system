@@ -1,38 +1,106 @@
 import sys
 from PyQt6.QtWidgets import (QApplication,
                              QMainWindow, QPushButton, QFileDialog)
-from PyQt6.QtWidgets import QVBoxLayout, QWidget, QLayout, QSizePolicy
+from PyQt6.QtWidgets import (QVBoxLayout, QWidget, QLayout,
+      QLabel, QLineEdit, QSizePolicy,QTableWidget, QTableWidgetItem, QTabWidget)
 from PyQt6 import QtCore, QtGui
+from PyQt6.QtGui import QTransform
 from Process import FileProcessor
-
+from HomePage import HomePage
 class FileDialogDemo(QMainWindow):
     def __init__(self):
         super().__init__()
         self.file_processor = FileProcessor()
-        self.resize(400,200)
+        self.home_page = HomePage()
+        self.resize(800,400)
+        # Create the tab widget
+        tabs = QTabWidget()
+        tabs.setStyleSheet("""
+         /* Style the QTabWidget (content area) */
+    QTabWidget::pane {
+        border: 1px solid #4CAF50; /* Green border */
+        border-radius: 5px; /* Rounded corners */
+    }
+
+    /* Style the tab bar */
+    QTabBar::tab {
+        background-color: #4CAF50; /* Green background like the button */
+        color: white; /* White text */
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+        font-weight: bold;
+        border: none; /* No border */
+        padding: 8px 16px; /* Padding for tab size */
+        margin-right: 4px; /* Space between tabs */
+        min-width: 100px; /* Match button width */
+        height: 40px; /* Match button height */
+    }
+
+    /* Hover effect for tabs */
+    QTabBar::tab:hover {
+        background-color: #2196F3; /* Blue background on hover */
+        color: #FFFFFF; /* White text */
+    }
+
+    /* Selected tab */
+    QTabBar::tab:selected {
+        background-color: #1976D2; /* Darker blue for active tab */
+        color: white;
+    }                          
+                               
+                           """)
+        
+        # Style the tabs for better appearance
+        self.setCentralWidget(tabs)
         self.setWindowTitle("Report Data Extracter")
         # Enable drag-and-drop on the main window
         self.setAcceptDrops(True)
+
+        # layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
+        # # Add button to layout with stretch factors
+        # layout.setSizeConstraint(QVBoxLayout.SizeConstraint.SetMinimumSize)
+        # layout.addStretch(1)  # Add stretch before button
+        # layout.addWidget(button)  # Add button
+        # layout.addStretch(1)  # Add stretch after button       
+      # Tab 1: Simple Label
+        tabs.addTab(self.home_page, "Home") 
         # Create central widget and layout
-        # Create layout
-        central_widget = QWidget()
-        layout = QVBoxLayout()
-        self.setCentralWidget(central_widget)
-        central_widget.setLayout(layout)
+        
+        
+        # Tab 2: Input and Button
+        tab2 = QWidget()
+        layout2 = QVBoxLayout()
+        input_field = QLineEdit()
+        input_field.setPlaceholderText("Enter some text...")
+        input_field.setStyleSheet("padding: 5px;")        
+        button = QPushButton("Submit")
+        button.clicked.connect(lambda: self.on_button_click(input_field.text()))
+        layout2.addWidget(input_field)
+        layout2.addWidget(button)
+        layout2.addStretch()
+        tab2.setLayout(layout2)
+        tabs.addTab(tab2, "Input")        # Create layout        
+        # Tab 3: Table
+        tab3 = QWidget()
+        layout3 = QVBoxLayout()
+        table = QTableWidget()
+        table.setRowCount(3)
+        table.setColumnCount(2)
+        table.setHorizontalHeaderLabels(["Name", "Age"])
+        table.setItem(0, 0, QTableWidgetItem("Alice"))
+        table.setItem(0, 1, QTableWidgetItem("25"))
+        table.setItem(1, 0, QTableWidgetItem("Bob"))
+        table.setItem(1, 1, QTableWidgetItem("30"))
+        table.setItem(2, 0, QTableWidgetItem("Charlie"))
+        table.setItem(2, 1, QTableWidgetItem("35"))
+        
+        layout3.addWidget(table)
+        tab3.setLayout(layout3)
+        tabs.addTab(tab3, QtGui.QIcon("images/dragdrop.png"), "Table")        # layout = QVBoxLayout()
         # Create button
-        button = QPushButton("Upload")
-        button.setToolTip("Please upload files")
-        button.clicked.connect(self.open_file_dialog)
-        button.setIcon(QtGui.QIcon("images/dragdrop.png"))
-        button.setIconSize(QtCore.QSize(50,50))
-        button.setSizePolicy(QSizePolicy.Policy.MinimumExpanding, QSizePolicy.Policy.MinimumExpanding)
-        button.setFixedSize(100, 50)
-        layout.setAlignment(QtCore.Qt.AlignmentFlag.AlignHCenter)
-        # Add button to layout with stretch factors
-        layout.setSizeConstraint(QVBoxLayout.SizeConstraint.SetMinimumSize)
-        layout.addStretch(1)  # Add stretch before button
-        layout.addWidget(button)  # Add button
-        layout.addStretch(1)  # Add stretch after button
+
+    def on_button_click(sefl, text):
+        print(f"You input {text}")
         
     def dragEnterEvent(self, event):
         """Handle drag enter event to accept file drops."""
@@ -62,37 +130,6 @@ class FileDialogDemo(QMainWindow):
                     results.append(f"{file_path}: {result}")
                 else:
                     results.append(f"{file_path}: Invalid file")
-
-    def open_file_dialog(self):
-        # Create open file dialog
-        default_path = QtCore.QStandardPaths.writableLocation(QtCore.QStandardPaths.StandardLocation.DocumentsLocation)
-        file_dialog = QFileDialog(self)
-        file_dialog.setDirectory(default_path)
-        file_dialog.setWindowFilePath(default_path)
-        file_dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
-
-        file_dialog.setNameFilter(
-            "Supported files (*.txt, *.zip, *.tar.gz);;"
-            "Text files (*.txt);;"
-            "Archive files (*.tar.gz *.zip);;"
-        )
-
-        # Show dialog and get selected file
-        if file_dialog.exec():
-            selected_files = file_dialog.selectedFiles()
-            path = selected_files[0]
-            # set file path
-            #
-            self.file_processor.set_file_path(path)
-            results = []
-            for file_path in selected_files:
-                self.file_processor.set_file_path(file_path)
-                if self.file_processor.is_valid_file():
-                    result = self.file_processor.process_file()
-                    results.append(f"{file_path}: {result}")
-                else:
-                    results.append(f"{file_path}: Invalid file")
-
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
